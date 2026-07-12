@@ -93,7 +93,7 @@
   /* =====================================================
      PANTALLA 1 · ENTRADA DESDE BLU  (chrome claro, fiel al host)
      ===================================================== */
-  #screen-home{ background:#ffffff; color:var(--navy); }
+  #screen-home{ background:#ffffff; color:var(--navy); overflow:hidden; }
   #screen-home .statusbar{ color:var(--navy); }
 
   .blu-top{
@@ -104,7 +104,7 @@
   .blu-top-icons{ display:flex; gap:18px; color:var(--navy); }
   .blu-top-icons svg{ width:24px; height:24px; }
 
-  .blu-body{ padding:0 22px 110px; }
+  .blu-body{ padding:0 22px 22px; flex:1; overflow-y:auto; min-height:0; }
 
   .section-label{
     font-family:var(--font-display); font-weight:500;
@@ -185,10 +185,10 @@
 
   /* Bottom nav (host) */
   .bottomnav{
-    position:absolute; bottom:0; left:0; right:0; height:78px;
+    flex:none; height:78px;
     background:#fff; border-top:1px solid #EEF1F5;
     display:flex; align-items:center; justify-content:space-around;
-    padding:0 22px 14px; z-index:15;
+    padding:0 22px 14px;
   }
   .bottomnav .nav-i{ display:flex; flex-direction:column; align-items:center; gap:3px; color:#9AA7B4; font-size:10px; }
   .bottomnav .nav-i.active{ color:var(--navy); }
