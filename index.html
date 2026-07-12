@@ -1,0 +1,823 @@
+<!--
+  BLUMI — Prototipo v1 (slice vertical)
+  Atlas × Diners Club / blu
+  ------------------------------------------------------------------
+  3 pantallas clicables:
+    1. Entrada desde blu        (#screen-home)   — el feature vive dentro de la app real
+    2. Racha activa             (#screen-racha)  — el "money shot"
+    3. Racha rota               (#screen-rota)   — el gancho emocional (la brasa se apaga)
+
+  Cómo navegar: toca la tarjeta de Blumi en la home, o usa el conmutador
+  "Demo" debajo del teléfono para saltar entre estados durante el pitch.
+
+  Blumi es un PLACEHOLDER en SVG. Cuando salga la versión final de Flow,
+  reemplaza el bloque <svg class="blumi"> por la imagen/SVG definitivo.
+
+  Todo el sistema visual está en :root (paleta y tipografía). Editable a mano.
+-->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blumi · Prototipo v1</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    /* ---- Sistema visual Blumi ---- */
+    --navy:    #0E2748;  /* base, autoridad, hereda Diners */
+    --cyan:    #3DC8FF;  /* color del producto · fuego azul */
+    --cyan-lt: #7FE5FF;  /* highlights, glow */
+    --cream:   #F5F1E8;  /* neutro premium */
+    --warm:    #FFE7A8;  /* acento cálido */
+
+    --navy-2:  #0A1D38;  /* navy aún más profundo para fondos */
+    --ink-soft:#6B7A8D;  /* texto secundario sobre claro */
+
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    font-family: var(--font-body);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #15355f 0%, transparent 60%),
+      #0a1424;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    padding:32px 16px;
+    color:#fff;
+  }
+
+  /* ---------- Marco de teléfono ---------- */
+  .phone{
+    width:390px;
+    max-width:100%;
+    height:844px;
+    max-height:90vh;
+    background:#fff;
+    border-radius:46px;
+    border:10px solid #060d1a;
+    box-shadow: 0 40px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+    overflow:hidden;
+    position:relative;
+    isolation:isolate;
+  }
+  .statusbar{
+    height:44px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 26px;
+    font-size:13px; font-weight:600;
+    position:absolute; top:0; left:0; right:0; z-index:20;
+    pointer-events:none;
+  }
+  .statusbar .dots{ display:flex; gap:5px; align-items:center; }
+  .statusbar .dots span{ width:15px; height:9px; border-radius:2px; background:currentColor; opacity:.85; }
+
+  /* Cada pantalla ocupa todo el teléfono */
+  .screen{
+    position:absolute; inset:0;
+    display:none;
+    flex-direction:column;
+    overflow-y:auto;
+    padding-top:44px;
+  }
+  .screen.active{ display:flex; }
+  .screen::-webkit-scrollbar{ display:none; }
+
+  /* =====================================================
+     PANTALLA 1 · ENTRADA DESDE BLU  (chrome claro, fiel al host)
+     ===================================================== */
+  #screen-home{ background:#ffffff; color:var(--navy); }
+  #screen-home .statusbar{ color:var(--navy); }
+
+  .blu-top{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:6px 22px 14px;
+  }
+  .blu-logo{ font-family:var(--font-display); font-weight:700; font-size:30px; color:var(--navy); letter-spacing:-1px; }
+  .blu-top-icons{ display:flex; gap:18px; color:var(--navy); }
+  .blu-top-icons svg{ width:24px; height:24px; }
+
+  .blu-body{ padding:0 22px 110px; }
+
+  .section-label{
+    font-family:var(--font-display); font-weight:500;
+    font-size:19px; color:var(--navy);
+    margin:18px 0 12px;
+  }
+
+  .card-diners{
+    background:#fff;
+    border:1px solid #E9ECF1;
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 6px 20px rgba(14,39,72,.05);
+  }
+  .card-diners-head{ display:flex; align-items:center; gap:12px; }
+  .card-diners .chip{
+    width:52px; height:34px; border-radius:6px;
+    background:linear-gradient(135deg,#1b3c66,#0E2748);
+    flex:none;
+  }
+  .card-diners .cd-name{ font-size:13px; font-weight:700; letter-spacing:.3px; color:var(--navy); }
+  .card-diners .cd-mask{ font-size:12px; color:var(--ink-soft); }
+  .card-diners .cd-amount{ text-align:center; font-family:var(--font-display); font-weight:700; font-size:34px; margin:14px 0 6px; color:var(--navy); }
+  .card-diners .cd-foot{ text-align:center; font-size:11px; color:var(--ink-soft); }
+
+  /* Atajos principales (fiel al host, simplificado) */
+  .atajos{ display:flex; justify-content:space-between; margin-top:4px; }
+  .atajo{ display:flex; flex-direction:column; align-items:center; gap:7px; width:64px; text-align:center; }
+  .atajo .ic{
+    width:46px; height:46px; border-radius:50%;
+    background:#F2F5F9; display:flex; align-items:center; justify-content:center;
+    color:var(--navy);
+  }
+  .atajo .ic svg{ width:21px; height:21px; }
+  .atajo span{ font-size:10.5px; color:var(--ink-soft); line-height:1.2; }
+
+  /* --- LA TARJETA NUEVA: Blumi (el elemento que no existe en blu hoy) --- */
+  .blumi-card{
+    margin-top:8px;
+    border-radius:22px;
+    padding:20px;
+    background:
+      radial-gradient(120px 120px at 85% 30%, rgba(127,229,255,.45), transparent 70%),
+      linear-gradient(135deg, #103a6b 0%, var(--navy) 55%, var(--navy-2) 100%);
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    cursor:pointer;
+    border:1px solid rgba(127,229,255,.18);
+    box-shadow:0 18px 40px rgba(11,33,64,.45);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .blumi-card:hover{ transform:translateY(-2px); box-shadow:0 24px 50px rgba(11,33,64,.55); }
+  .blumi-card:active{ transform:translateY(0); }
+  .blumi-card .eyebrow{
+    font-family:var(--font-display); font-weight:700; font-size:10.5px;
+    letter-spacing:2px; color:var(--cyan-lt); text-transform:uppercase;
+  }
+  .blumi-card h3{
+    font-family:var(--font-display); font-weight:700; font-size:21px;
+    margin:7px 0 6px; max-width:78%; line-height:1.15;
+  }
+  .blumi-card p{ font-size:13px; color:#CFE3F4; max-width:78%; line-height:1.4; }
+  .blumi-card .streak-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:14px; padding:7px 13px; border-radius:999px;
+    background:rgba(127,229,255,.14); border:1px solid rgba(127,229,255,.3);
+    font-family:var(--font-display); font-weight:700; font-size:13px; color:var(--cyan-lt);
+  }
+  .blumi-card .streak-pill svg{ width:16px; height:16px; color:var(--cyan); }
+  .blumi-card .mini-blumi{
+    position:absolute; right:-6px; bottom:-14px; width:120px; height:140px;
+    filter: drop-shadow(0 0 26px rgba(61,200,255,.55));
+    opacity:.96;
+  }
+  .blumi-card .go{ position:absolute; top:20px; right:20px; color:var(--cyan-lt); }
+  .blumi-card .go svg{ width:20px; height:20px; }
+
+  /* Bottom nav (host) */
+  .bottomnav{
+    position:absolute; bottom:0; left:0; right:0; height:78px;
+    background:#fff; border-top:1px solid #EEF1F5;
+    display:flex; align-items:center; justify-content:space-around;
+    padding:0 22px 14px; z-index:15;
+  }
+  .bottomnav .nav-i{ display:flex; flex-direction:column; align-items:center; gap:3px; color:#9AA7B4; font-size:10px; }
+  .bottomnav .nav-i.active{ color:var(--navy); }
+  .bottomnav .nav-i svg{ width:23px; height:23px; }
+  .bottomnav .nav-d{
+    width:50px; height:50px; border-radius:50%;
+    background:linear-gradient(135deg,#1b4d8a,#0E2748);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:var(--font-display); font-weight:700; font-size:22px;
+    box-shadow:0 6px 16px rgba(14,39,72,.35);
+  }
+
+  /* =====================================================
+     PANTALLAS DE PRODUCTO (mundo Blumi · navy + fuego azul)
+     ===================================================== */
+  .product{
+    background:
+      radial-gradient(700px 420px at 50% 16%, #18406f 0%, transparent 60%),
+      linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+  }
+  .product .statusbar{ color:#fff; }
+
+  .prod-top{
+    display:flex; align-items:center; gap:12px;
+    padding:8px 22px 4px;
+  }
+  .prod-top .back{
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff;
+  }
+  .prod-top .back svg{ width:20px; height:20px; }
+  .prod-top .title{ font-family:var(--font-display); font-weight:500; font-size:18px; }
+
+  /* Escenario de Blumi */
+  .stage{ display:flex; flex-direction:column; align-items:center; padding:14px 22px 0; }
+
+  .blumi-wrap{ position:relative; width:200px; height:240px; display:flex; align-items:center; justify-content:center; }
+  .blumi{ width:185px; height:230px; animation: float 4.5s ease-in-out infinite; }
+  .blumi.is-lit{ filter: drop-shadow(0 14px 30px rgba(61,200,255,.45)); }
+  .blumi.is-out{ filter: drop-shadow(0 14px 24px rgba(0,0,0,.4)); animation: float-sad 5s ease-in-out infinite; }
+
+  /* halo ambiental detrás de Blumi (solo encendido) */
+  .halo{
+    position:absolute; width:230px; height:230px; border-radius:50%;
+    background: radial-gradient(circle, rgba(61,200,255,.35) 0%, transparent 65%);
+    filter: blur(8px);
+    animation: pulse 4.5s ease-in-out infinite;
+    z-index:0;
+  }
+  .blumi-wrap .blumi{ position:relative; z-index:1; }
+
+  /* Stat grande */
+  .streak-stat{ text-align:center; margin-top:2px; }
+  .streak-stat .num{
+    font-family:var(--font-display); font-weight:700; font-size:82px; line-height:.9;
+    background:linear-gradient(180deg,#fff, var(--cyan-lt));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .streak-stat .lbl{
+    font-family:var(--font-display); font-weight:500; font-size:15px;
+    letter-spacing:3px; text-transform:uppercase; color:var(--cyan-lt); margin-top:6px;
+  }
+
+  /* Semana */
+  .week{ display:flex; justify-content:center; gap:9px; margin:24px 0 4px; padding:0 22px; }
+  .day{ display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .day .dot{
+    width:34px; height:34px; border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08);
+    color:rgba(255,255,255,.25);
+  }
+  .day .dot svg{ width:18px; height:18px; }
+  .day.done .dot{
+    background:linear-gradient(160deg, rgba(61,200,255,.25), rgba(61,200,255,.08));
+    border-color:rgba(127,229,255,.55); color:var(--cyan-lt);
+  }
+  .day.today .dot{ box-shadow:0 0 0 2px var(--cyan), 0 0 16px rgba(61,200,255,.55); color:#fff; }
+  .day .dn{ font-size:11px; color:rgba(255,255,255,.45); font-weight:500; }
+
+  /* Meta semanal (reemplaza el tracker diario) */
+  .goal{ margin:26px 22px 0; padding:18px; border-radius:18px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); }
+  .goal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .goal-title{ font-family:var(--font-display); font-weight:500; font-size:15px; }
+  .goal-range{ font-size:12px; color:rgba(255,255,255,.5); }
+  .goal-track{ display:flex; gap:10px; }
+  .goal-track .seg{
+    flex:1; height:46px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
+    color:rgba(255,255,255,.22);
+  }
+  .goal-track .seg svg{ width:22px; height:22px; }
+  .goal-track .seg.done{
+    background:linear-gradient(160deg, rgba(61,200,255,.28), rgba(61,200,255,.08));
+    border-color:rgba(127,229,255,.55); color:var(--cyan-lt);
+  }
+  .goal-foot{ font-size:12.5px; color:#B7C9DA; margin-top:13px; }
+  .goal-foot b{ color:#fff; font-weight:600; }
+
+  /* Fila de métricas */
+  .metrics{ display:flex; gap:12px; padding:22px 22px 0; }
+  .metric{
+    flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
+    border-radius:16px; padding:14px;
+  }
+  .metric .mlabel{ font-size:11px; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:1px; }
+  .metric .mval{ font-family:var(--font-display); font-weight:700; font-size:24px; margin-top:4px; }
+  .metric .mval.accent{ color:var(--warm); }
+
+  /* Bloque de voz de Blumi */
+  .blumi-says{
+    margin:20px 22px 0; padding:16px 18px; border-radius:18px;
+    background:rgba(127,229,255,.08); border:1px solid rgba(127,229,255,.18);
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .blumi-says .badge{
+    flex:none; width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(160deg,var(--cyan),#1b6fae);
+    display:flex; align-items:center; justify-content:center; color:#fff;
+  }
+  .blumi-says .badge svg{ width:18px; height:18px; }
+  .blumi-says p{ font-size:13.5px; line-height:1.45; color:#E4F2FC; }
+  .blumi-says p b{ color:#fff; font-weight:600; }
+
+  /* CTA */
+  .cta{
+    margin:auto 22px 28px; margin-top:22px;
+    display:block; width:calc(100% - 44px);
+    padding:17px; border-radius:16px; border:none; cursor:pointer;
+    font-family:var(--font-display); font-weight:700; font-size:16px;
+    background:linear-gradient(135deg, var(--cyan), #1f8fd1); color:var(--navy);
+    box-shadow:0 12px 30px rgba(61,200,255,.35);
+    transition:transform .15s ease;
+  }
+  .cta:active{ transform:scale(.985); }
+  .cta.ghost{
+    background:transparent; color:var(--cyan-lt);
+    border:1px solid rgba(127,229,255,.4); box-shadow:none; margin-top:10px;
+  }
+
+  /* ---- Estado ROTA: enfriar todo ---- */
+  #screen-rota{ filter:saturate(.7); }
+  #screen-rota .stage{ padding-top:30px; }
+  .rota-head{ text-align:center; padding:6px 30px 0; }
+  .rota-head h2{ font-family:var(--font-display); font-weight:700; font-size:30px; margin-top:10px; }
+  .rota-head p{ font-size:14px; color:#B7C4D3; line-height:1.5; margin-top:12px; }
+  .loss-chip{
+    display:inline-flex; align-items:center; gap:7px; margin-top:18px;
+    padding:9px 16px; border-radius:999px;
+    background:rgba(255,120,120,.12); border:1px solid rgba(255,150,150,.3);
+    color:#FFB4B4; font-family:var(--font-display); font-weight:700; font-size:15px;
+  }
+
+  /* ====================================================
+     PANTALLAS NUEVAS · progreso / +consumo / canje / nivel
+     ==================================================== */
+
+  /* -- Racha mantenida (celebración) -- */
+  #screen-mantenida{ text-align:center; }
+  .celebrate-glow{ position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(440px 320px at 50% 26%, rgba(61,200,255,.30), transparent 68%); }
+  #screen-mantenida .stage, #screen-mantenida .win-block, #screen-mantenida .blumi-says, #screen-mantenida .cta{ position:relative; z-index:1; }
+  .spark{ position:absolute; border-radius:50%; background:var(--cyan-lt); filter:blur(.3px); opacity:.85; z-index:1; }
+  .win-block{ padding:4px 30px 0; }
+  .win-title{ font-family:var(--font-display); font-weight:700; font-size:29px; }
+  .win-points{ font-family:var(--font-display); font-weight:700; font-size:60px; line-height:1; margin-top:10px;
+    background:linear-gradient(180deg,#fff,var(--cyan-lt)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .win-chips{ display:flex; gap:10px; justify-content:center; margin-top:16px; }
+  .win-chips .wc{ padding:8px 14px; border-radius:999px; font-family:var(--font-display); font-weight:700; font-size:13px;
+    background:rgba(127,229,255,.12); border:1px solid rgba(127,229,255,.3); color:var(--cyan-lt); }
+
+  /* -- Progreso semanal -- */
+  .streak-ribbon{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:0 22px; }
+  .wk{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .wk .bead{ width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); color:rgba(255,255,255,.25); }
+  .wk .bead svg{ width:17px; height:17px; }
+  .wk.done .bead{ background:linear-gradient(160deg,rgba(61,200,255,.28),rgba(61,200,255,.07));
+    border-color:rgba(127,229,255,.55); color:var(--cyan-lt); }
+  .wk.now .bead{ box-shadow:0 0 0 2px var(--cyan),0 0 14px rgba(61,200,255,.5); color:#fff; }
+  .wk .wl{ font-size:10px; color:rgba(255,255,255,.45); }
+  .history{ margin:24px 22px 0; }
+  .history .ht{ font-family:var(--font-display); font-weight:500; font-size:14px; margin-bottom:14px; color:#fff; }
+  .hrow{ display:flex; align-items:center; gap:12px; margin-bottom:12px; font-size:12.5px; color:#B7C9DA; }
+  .hrow .hk{ width:54px; flex:none; }
+  .hbar{ flex:1; height:9px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .hbar i{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--cyan),var(--cyan-lt)); }
+  .hrow .hv{ width:50px; text-align:right; flex:none; font-weight:600; color:#fff; }
+
+  /* -- Catálogo de canje -- */
+  #screen-canje .prod-top{ justify-content:flex-start; }
+  .balance-pill{ margin-left:auto; padding:8px 14px; border-radius:999px; font-family:var(--font-display); font-weight:700;
+    font-size:13px; background:rgba(127,229,255,.12); border:1px solid rgba(127,229,255,.3); color:var(--cyan-lt); }
+  .reward-feat{ margin:14px 22px 0; padding:18px; border-radius:18px; position:relative; overflow:hidden;
+    background:radial-gradient(120px 120px at 88% 18%,rgba(255,231,168,.4),transparent 70%),linear-gradient(135deg,#15406f,#0E2748);
+    border:1px solid rgba(255,231,168,.25); }
+  .reward-feat .rf-tag{ font-family:var(--font-display); font-weight:700; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--warm); }
+  .reward-feat h3{ font-family:var(--font-display); font-weight:700; font-size:19px; margin:6px 0 3px; }
+  .reward-feat p{ font-size:12.5px; color:#CFE0F0; }
+  .reward-feat .rf-btn{ margin-top:14px; padding:9px 16px; border:none; border-radius:11px; cursor:pointer;
+    font-family:var(--font-display); font-weight:700; font-size:13px; background:var(--warm); color:#5a3e00; }
+  .rewards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px 22px 24px; }
+  .reward{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:14px; }
+  .reward .ricon{ width:38px; height:38px; border-radius:11px; background:rgba(127,229,255,.12);
+    display:flex; align-items:center; justify-content:center; color:var(--cyan-lt); margin-bottom:10px; }
+  .reward .ricon svg{ width:20px; height:20px; }
+  .reward .rname{ font-weight:600; font-size:13.5px; line-height:1.25; }
+  .reward .rpartner{ font-size:11px; color:rgba(255,255,255,.5); margin-top:2px; }
+  .reward .rcost{ display:inline-block; margin-top:10px; padding:5px 10px; border-radius:999px; font-family:var(--font-display);
+    font-weight:700; font-size:12px; background:rgba(61,200,255,.15); color:var(--cyan-lt); }
+
+  /* -- Nivel -- */
+  #screen-nivel{ text-align:center; }
+  .level-name{ font-family:var(--font-display); font-weight:700; font-size:28px; margin-top:4px; }
+  .level-sub{ font-size:12px; color:var(--cyan-lt); letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+  .levelbar-wrap{ margin:24px 22px 0; }
+  .levelbar{ height:12px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .levelbar i{ display:block; height:100%; width:60%; border-radius:999px; background:linear-gradient(90deg,var(--cyan),var(--cyan-lt)); }
+  .levelbar-lbl{ display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,.55); margin-top:8px; }
+  .tiers{ display:flex; justify-content:space-between; padding:0 22px; margin-top:24px; }
+  .tier{ display:flex; flex-direction:column; align-items:center; gap:7px; font-size:10px; color:rgba(255,255,255,.4); }
+  .tier .tdot{ width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,.15); }
+  .tier.on .tdot{ background:var(--cyan); box-shadow:0 0 10px rgba(61,200,255,.6); }
+  .tier.on{ color:var(--cyan-lt); font-weight:600; }
+  .perks{ list-style:none; margin:26px 22px 0; text-align:left; }
+  .perks li{ display:flex; gap:10px; align-items:flex-start; font-size:13.5px; color:#D6E4F2; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.06); }
+  .perks li svg{ width:18px; height:18px; color:var(--cyan); flex:none; margin-top:1px; }
+
+  /* ---------- Conmutador de demo (fuera del teléfono) ---------- */
+  .demo-bar{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .demo-bar .demo-label{ font-size:12px; letter-spacing:1px; text-transform:uppercase; color:#6b85a3; }
+  .demo-switch{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:430px; background:rgba(255,255,255,.05); padding:6px; border-radius:14px; border:1px solid rgba(255,255,255,.08); }
+  .demo-switch button{
+    font-family:var(--font-body); font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:10px; border:none; cursor:pointer;
+    background:transparent; color:#9fb3c8; transition:all .15s ease;
+  }
+  .demo-switch button.active{ background:var(--cyan); color:var(--navy); }
+
+  /* ---------- Animaciones ---------- */
+  @keyframes float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-12px); } }
+  @keyframes float-sad{ 0%,100%{ transform:translateY(0) rotate(-1deg); } 50%{ transform:translateY(5px) rotate(1deg); } }
+  @keyframes pulse{ 0%,100%{ transform:scale(.92); opacity:.7; } 50%{ transform:scale(1.06); opacity:1; } }
+  @keyframes emberPulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .blumi, .halo, #ember-glow, #ember-glow-rota{ animation:none !important; }
+  }
+  /* imágenes de Blumi (reemplazan a los placeholders SVG) */
+  img.blumi{ width:100%; height:100%; object-fit:contain; }
+  img.mini-blumi{ object-fit:contain; }
+</style>
+
+
+<div class="phone">
+
+  <!-- ============ PANTALLA 1 · ENTRADA DESDE BLU ============ -->
+  <section id="screen-home" class="screen active">
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+
+    <div class="blu-top">
+      <div class="blu-logo">blu</div>
+      <div class="blu-top-icons">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      </div>
+    </div>
+
+    <div class="blu-body">
+      <div class="section-label">Tus productos</div>
+      <div class="card-diners">
+        <div class="card-diners-head">
+          <div class="chip"></div>
+          <div>
+            <div class="cd-name">DINERS CLUB MILES</div>
+            <div class="cd-mask">**** 6210</div>
+          </div>
+        </div>
+        <div class="cd-amount">$0.00</div>
+        <div class="cd-foot">Saldo a pagar hasta 19/sep/2025</div>
+      </div>
+
+      <div class="section-label">Atajos principales</div>
+      <div class="atajos">
+        <div class="atajo">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+          <span>Datos de tarjeta</span>
+        </div>
+        <div class="atajo">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+          <span>Estado de cuenta</span>
+        </div>
+        <div class="atajo">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M5 9h9a3 3 0 0 1 0 6H6"/></svg></div>
+          <span>Diferir consumos</span>
+        </div>
+        <div class="atajo">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+          <span>Desactivar tarjeta</span>
+        </div>
+      </div>
+
+      <div class="section-label">Tu racha</div>
+      <!-- TARJETA NUEVA: el punto de entrada a Blumi -->
+      <div class="blumi-card" onclick="go('screen-racha')">
+        <div class="eyebrow">Nuevo en blu</div>
+        <h3>Tu racha sigue encendida</h3>
+        <p>5 semanas seguidas usando tu Diners. No dejes que Blumi se apague.</p>
+        <div class="streak-pill">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+          5 semanas
+        </div>
+        <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+
+        <!-- mini Blumi -->
+        <img class="mini-blumi" src="assets/blumi-feliz.png" alt="Blumi">
+      </div>
+    </div>
+
+    <nav class="bottomnav">
+      <div class="nav-i active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h.01"/></svg>Billetera</div>
+      <div class="nav-d">d</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Más</div>
+    </nav>
+  </section>
+
+
+  <!-- ============ PANTALLA 2 · RACHA ACTIVA ============ -->
+  <section id="screen-racha" class="screen product">
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+
+    <div class="prod-top">
+      <div class="back" onclick="go('screen-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title">Mi racha</div>
+    </div>
+
+    <div class="stage">
+      <div class="blumi-wrap">
+        <div class="halo"></div>
+        <!-- BLUMI encendido (placeholder) -->
+        <img class="blumi is-lit" src="assets/blumi-feliz.png" alt="Blumi">
+      </div>
+
+      <div class="streak-stat">
+        <div class="num">5</div>
+        <div class="lbl">semanas en racha</div>
+      </div>
+    </div>
+
+    <div class="goal">
+      <div class="goal-head">
+        <span class="goal-title">Meta de esta semana</span>
+        <span class="goal-range">9–15 jun</span>
+      </div>
+      <div class="goal-track">
+        <div class="seg done"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+        <div class="seg done"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+        <div class="seg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/></svg></div>
+      </div>
+      <div class="goal-foot"><b>2 de 3 consumos.</b> Te falta uno —cualquier día de esta semana.</div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><div class="mlabel">Esta semana</div><div class="mval">240 pts</div></div>
+      <div class="metric"><div class="mlabel">Multiplicador</div><div class="mval accent">x2</div></div>
+    </div>
+
+    <div class="blumi-says">
+      <div class="badge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+      <p>Un consumo más <b>esta semana</b> y mantienes tu racha. Sin apuros: cualquier café o almuerzo cuenta.</p>
+    </div>
+
+    <button class="cta" onclick="go('screen-canje')">Ver mis recompensas</button>
+  </section>
+
+
+  <!-- ============ PANTALLA 3 · RACHA ROTA (el gancho) ============ -->
+  <section id="screen-rota" class="screen product">
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+
+    <div class="prod-top">
+      <div class="back" onclick="go('screen-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title">Mi racha</div>
+    </div>
+
+    <div class="stage">
+      <div class="blumi-wrap">
+        <!-- BLUMI apagado: brasa gris, ojos tristes, sin halo -->
+        <img class="blumi is-out" src="assets/blumi-triste.png" alt="Blumi apagado">
+      </div>
+    </div>
+
+    <div class="rota-head">
+      <h2>Se apagó tu brasa</h2>
+      <p>Rompiste la racha de esta semana. Blumi no se rinde fácil… y sabe que tú tampoco. Un consumo y la volvemos a encender.</p>
+      <div class="loss-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/></svg>
+        240 puntos perdidos
+      </div>
+    </div>
+
+    <button class="cta" onclick="go('screen-home')">Encender de nuevo</button>
+    <button class="cta ghost" onclick="alert('Demo: recordatorio para no romper la próxima racha.')">Recuérdame mañana</button>
+  </section>
+
+
+  <!-- ===== Blumi placeholder reutilizable (lo usan las pantallas nuevas) ===== -->
+  <svg style="position:absolute;width:0;height:0" aria-hidden="true">
+    <defs>
+      <linearGradient id="phBody" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#0E2748"/><stop offset=".48" stop-color="#3DC8FF"/><stop offset="1" stop-color="#CFF4FF"/>
+      </linearGradient>
+      <radialGradient id="phEmber" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="#BFF1FF"/><stop offset="1" stop-color="#3DC8FF"/>
+      </radialGradient>
+      <symbol id="blumi-ph" viewBox="0 0 140 180">
+        <path d="M70,8 C105,60 124,98 124,126 A54,54 0 1 1 16,126 C16,98 35,60 70,8 Z" fill="url(#phBody)"/>
+        <ellipse cx="40" cy="132" rx="9" ry="6" fill="#7FE5FF" opacity=".55"/>
+        <ellipse cx="100" cy="132" rx="9" ry="6" fill="#7FE5FF" opacity=".55"/>
+        <ellipse cx="54" cy="116" rx="14" ry="17" fill="#fff"/><ellipse cx="86" cy="116" rx="14" ry="17" fill="#fff"/>
+        <circle cx="56" cy="121" r="6.5" fill="#0E2748"/><circle cx="84" cy="121" r="6.5" fill="#0E2748"/>
+        <circle cx="58.5" cy="118.5" r="2.4" fill="#fff"/><circle cx="86.5" cy="118.5" r="2.4" fill="#fff"/>
+        <path d="M62 138 q8 7 16 0" fill="none" stroke="#0E2748" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="70" cy="156" r="15" fill="#7FE5FF" opacity=".6" style="filter:blur(5px)"/>
+        <path d="M70 164 c-7 -7 -13 -11 -13 -17 a6.5 6.5 0 0 1 13 -2 a6.5 6.5 0 0 1 13 2 c0 6 -6 10 -13 17Z" fill="url(#phEmber)"/>
+      </symbol>
+    </defs>
+  </svg>
+
+
+  <!-- ============ PANTALLA 4 · PROGRESO SEMANAL ============ -->
+  <section id="screen-progreso" class="screen product">
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+    <div class="prod-top">
+      <div class="back" onclick="go('screen-racha')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title">Mi progreso</div>
+    </div>
+
+    <div class="stage" style="padding-top:6px;">
+      <div class="blumi-wrap" style="width:150px;height:160px;">
+        <div class="halo"></div>
+        <!-- ▼▼ BLUMI placeholder · reemplazar por imagen de Flow (emoción: animándote) ▼▼
+             cambia el <svg> por <img src="blumi-animando.png" class="blumi"> -->
+        <img class="blumi is-lit" src="assets/blumi-feliz.png" alt="Blumi">
+        <!-- ▲▲ fin placeholder Blumi ▲▲ -->
+      </div>
+      <div class="streak-stat"><div class="num" style="font-size:60px;">5</div><div class="lbl">semanas seguidas</div></div>
+    </div>
+    <div style="text-align:center; font-size:12.5px; color:#9fb7cf; margin:8px 0 18px;">Tu mejor racha: 7 semanas</div>
+
+    <div class="streak-ribbon">
+      <div class="wk done"><div class="bead"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><span class="wl">S1</span></div>
+      <div class="wk done"><div class="bead"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><span class="wl">S2</span></div>
+      <div class="wk done"><div class="bead"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><span class="wl">S3</span></div>
+      <div class="wk done"><div class="bead"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><span class="wl">S4</span></div>
+      <div class="wk done"><div class="bead"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><span class="wl">S5</span></div>
+      <div class="wk now"><div class="bead"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><span class="wl">S6</span></div>
+    </div>
+
+    <div class="history">
+      <div class="ht">Puntos por semana</div>
+      <div class="hrow"><span class="hk">Semana 3</span><span class="hbar"><i style="width:62%"></i></span><span class="hv">180</span></div>
+      <div class="hrow"><span class="hk">Semana 4</span><span class="hbar"><i style="width:78%"></i></span><span class="hv">210</span></div>
+      <div class="hrow"><span class="hk">Semana 5</span><span class="hbar"><i style="width:90%"></i></span><span class="hv">240</span></div>
+    </div>
+
+    <div class="blumi-says" style="margin-top:22px;">
+      <div class="badge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+      <p>Cinco semanas sin apagarte. <b>Vas por tu mejor marca</b>, ñaño.</p>
+    </div>
+    <button class="cta" onclick="go('screen-canje')">Ver recompensas</button>
+  </section>
+
+
+  <!-- ============ PANTALLA 5 · RACHA MANTENIDA (celebración) ============ -->
+  <section id="screen-mantenida" class="screen product">
+    <div class="celebrate-glow"></div>
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+    <div class="prod-top">
+      <div class="back" onclick="go('screen-racha')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title">¡Racha mantenida!</div>
+    </div>
+
+    <span class="spark" style="top:120px;left:60px;width:7px;height:7px;"></span>
+    <span class="spark" style="top:160px;right:54px;width:9px;height:9px;"></span>
+    <span class="spark" style="top:240px;left:48px;width:6px;height:6px;opacity:.6;"></span>
+    <span class="spark" style="top:200px;right:70px;width:5px;height:5px;opacity:.7;"></span>
+    <span class="spark" style="top:300px;right:48px;width:7px;height:7px;opacity:.5;"></span>
+
+    <div class="stage" style="padding-top:18px;">
+      <div class="blumi-wrap">
+        <div class="halo"></div>
+        <!-- ▼▼ BLUMI placeholder · reemplazar por imagen de Flow (emoción: celebrando, brazos arriba) ▼▼ -->
+        <img class="blumi is-lit" src="assets/blumi-feliz.png" alt="Blumi">
+        <!-- ▲▲ fin placeholder Blumi ▲▲ -->
+      </div>
+    </div>
+
+    <div class="win-block">
+      <div class="win-title">¡Semana completada!</div>
+      <div class="win-points">+120 pts</div>
+      <div class="win-chips"><span class="wc">Racha · 6 semanas</span><span class="wc">x2 activo</span></div>
+    </div>
+
+    <div class="blumi-says" style="margin-top:26px;">
+      <div class="badge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+      <p>¡Esoo! Mantuviste la llama una semana más. <b>Así se hace, ñaño.</b></p>
+    </div>
+    <button class="cta" onclick="go('screen-home')">Genial</button>
+  </section>
+
+
+  <!-- ============ PANTALLA 6 · CATÁLOGO DE CANJE ============ -->
+  <section id="screen-canje" class="screen product">
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+    <div class="prod-top">
+      <div class="back" onclick="go('screen-racha')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title">Recompensas</div>
+      <div class="balance-pill">1.240 pts</div>
+    </div>
+
+    <div class="reward-feat">
+      <div class="rf-tag">Destacado</div>
+      <h3>Almuerzo gratis en tu U</h3>
+      <p>Canjéalo en cafeterías aliadas · 800 pts</p>
+      <button class="rf-btn" onclick="alert('Demo: canje confirmado.')">Canjear</button>
+    </div>
+
+    <div class="rewards">
+      <div class="reward">
+        <div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 8h13v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M17 9h2a2 2 0 0 1 0 4h-2"/></svg></div>
+        <div class="rname">Café gratis</div><div class="rpartner">Cafetería aliada</div>
+        <span class="rcost">400 pts</span>
+      </div>
+      <div class="reward">
+        <div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg></div>
+        <div class="rname">2x1 en cine</div><div class="rpartner">Cine aliado</div>
+        <span class="rcost">650 pts</span>
+      </div>
+      <div class="reward">
+        <div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg></div>
+        <div class="rname">1 mes de música</div><div class="rpartner">Streaming</div>
+        <span class="rcost">1.200 pts</span>
+      </div>
+      <div class="reward">
+        <div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
+        <div class="rname">Recarga de saldo</div><div class="rpartner">Operadora</div>
+        <span class="rcost">300 pts</span>
+      </div>
+      <div class="reward">
+        <div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 11h14l-1 9H6z"/><path d="M9 11V7a3 3 0 0 1 6 0v4"/></svg></div>
+        <div class="rname">Combo snack</div><div class="rpartner">Cafetería U</div>
+        <span class="rcost">350 pts</span>
+      </div>
+      <div class="reward">
+        <div class="ricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 12l-8.5 8.5a2 2 0 0 1-2.8 0L3 14.8V4h10.8z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
+        <div class="rname">Descuento Deuna</div><div class="rpartner">Pagos</div>
+        <span class="rcost">250 pts</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ PANTALLA 7 · NIVEL / MULTIPLICADOR ============ -->
+  <section id="screen-nivel" class="screen product">
+    <div class="statusbar"><span>9:41</span><div class="dots"><span></span><span></span><span></span></div></div>
+    <div class="prod-top">
+      <div class="back" onclick="go('screen-racha')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title">Mi nivel</div>
+    </div>
+
+    <div class="stage" style="padding-top:10px;">
+      <div class="blumi-wrap" style="width:160px;height:170px;">
+        <div class="halo"></div>
+        <!-- ▼▼ BLUMI placeholder · reemplazar por imagen de Flow (emoción: orgulloso) ▼▼ -->
+        <img class="blumi is-lit" src="assets/blumi-feliz.png" alt="Blumi">
+        <!-- ▲▲ fin placeholder Blumi ▲▲ -->
+      </div>
+      <div class="level-name">Llama Azul</div>
+      <div class="level-sub">Nivel 3 · x2 puntos</div>
+    </div>
+
+    <div class="levelbar-wrap">
+      <div class="levelbar"><i></i></div>
+      <div class="levelbar-lbl"><span>60% hacia Fogata</span><span>Nivel 4</span></div>
+    </div>
+
+    <div class="tiers">
+      <div class="tier on"><div class="tdot"></div>Chispa</div>
+      <div class="tier on"><div class="tdot"></div>Brasa</div>
+      <div class="tier on"><div class="tdot"></div>Llama</div>
+      <div class="tier"><div class="tdot"></div>Fogata</div>
+      <div class="tier"><div class="tdot"></div>Incendio</div>
+    </div>
+
+    <ul class="perks">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>x2 puntos en cada consumo</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Acceso a los retos premium del mes</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Recompensas exclusivas de aliados</li>
+    </ul>
+    <button class="cta" onclick="go('screen-canje')">Ver recompensas del nivel</button>
+  </section>
+
+</div>
+
+
+<!-- Conmutador de demo (para el pitch) -->
+<div class="demo-bar">
+  <div class="demo-label">Demo · toca para cambiar de pantalla</div>
+  <div class="demo-switch">
+    <button class="active" data-s="screen-home" onclick="go('screen-home')">Entrada blu</button>
+    <button data-s="screen-racha" onclick="go('screen-racha')">Racha activa</button>
+    <button data-s="screen-progreso" onclick="go('screen-progreso')">Progreso</button>
+    <button data-s="screen-mantenida" onclick="go('screen-mantenida')">+1 consumo</button>
+    <button data-s="screen-rota" onclick="go('screen-rota')">Racha rota</button>
+    <button data-s="screen-canje" onclick="go('screen-canje')">Recompensas</button>
+    <button data-s="screen-nivel" onclick="go('screen-nivel')">Nivel</button>
+  </div>
+</div>
+
+
+<script>
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    document.querySelectorAll('.demo-switch button').forEach(b => b.classList.toggle('active', b.dataset.s === id));
+    document.querySelector('.phone .screen.active').scrollTop = 0;
+  }
+</script>
